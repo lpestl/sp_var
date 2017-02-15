@@ -1,1 +1,4 @@
-—юда складывать все проекты, на которых проводили тесты, которые пробовали сделать. —юда же нейросеть, сюда же и модельки можно.
+15.02.2017
+	openFrameworks version:		of_v0.9.8_vs_release
+	location: 			{of_path}/apps/myApps/
+	Addons: 			ofxGifDecoder, ofxGui,ofxOpenCv, ofxTrueTypeFontUC, ofxTweener, ofxXmlSettings, ofxThreadedImageLoader

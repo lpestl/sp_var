@@ -1,0 +1,7 @@
+ofxGifDecoder
+ofxGui
+ofxOpenCv
+ofxThreadedImageLoader
+ofxTrueTypeFontUC
+ofxTweener
+ofxXmlSettings
