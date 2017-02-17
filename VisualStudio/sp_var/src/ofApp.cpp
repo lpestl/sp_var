@@ -12,6 +12,10 @@ ofApp::~ofApp()
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+#ifdef TARGET_ANDROID
+	// initialize the accelerometer
+	ofxAccelerometer.setup();
+#endif
 	main_sc->setup();
 }
 
@@ -41,46 +45,117 @@ void ofApp::keyReleased(int key){
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
+void ofApp::windowResized(int w, int h) {
+
+}
+
+#ifdef TARGET_ANDROID
+//--------------------------------------------------------------
+void ofApp::touchDown(int x, int y, int id)
+{
+	main_sc->touchDown(x, y, id);
+}
+
+//--------------------------------------------------------------
+void ofApp::touchMoved(int x, int y, int id)
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::touchUp(int x, int y, int id)
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::touchDoubleTap(int x, int y, int id)
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::touchCancelled(int x, int y, int id)
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::swipe(ofxAndroidSwipeDir swipeDir, int id)
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::pause()
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::stop()
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::resume()
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::reloadTextures()
+{
+}
+
+//--------------------------------------------------------------
+bool ofApp::backPressed()
+{
+	return false;
+}
+
+//--------------------------------------------------------------
+void ofApp::okPressed()
+{
+}
+
+//--------------------------------------------------------------
+void ofApp::cancelPressed()
+{
+}
+
+#else
+//--------------------------------------------------------------
+void ofApp::mouseMoved(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
+void ofApp::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::mousePressed(int x, int y, int button) {
 	main_sc->mousePressed(x, y, button);
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseReleased(int x, int y, int button) {
 	main_sc->mouseReleased(x, y, button);
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
+void ofApp::mouseEntered(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
+void ofApp::mouseExited(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
+void ofApp::gotMessage(ofMessage msg) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
+void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 }
 
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
-
-}
+#endif

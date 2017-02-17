@@ -10,7 +10,7 @@ class eye
 public:
 	enum eye_type { LEFT_EYE, RIGHT_EYE, CUSTOM };
 	
-	void setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type type);
+	void setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type type, bool activate = false);
 	void update();
 	void draw();
 	void exit();
@@ -72,6 +72,14 @@ private:
 	vector<ofVideoDevice> devices;
 	int indexCam;
 
+	int one_second_time;
+	int camera_fps;
+	int frames_one_sec;
+
+#ifdef TARGET_ANDROID
+	//bool facing;
+	int orientation;
+#endif
 	int camWidth;
 	int camHeight;
 

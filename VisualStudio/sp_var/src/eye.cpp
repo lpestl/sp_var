@@ -1,12 +1,20 @@
 #include "eye.h"
+#ifdef TARGET_ANDROID
+#include "ofxAndroidVideoGrabber.h"
+#endif
 
-void eye::setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type type)
+void eye::setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type type, bool activate)
 {
-	enable = false;
+	enable = activate;
+
 	mainRect = rect;
 	viewRect = rect;
 
+#ifdef TARGET_ANDROID
+	decoderCap.decode("pics/giphy.gif");
+#else
 	decoderCap.decode("data\\pics\\giphy.gif");
+#endif
 	cap = decoderCap.getFile();
 
 	lateral_margins = 10;
@@ -17,8 +25,8 @@ void eye::setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type typ
 	vidGrabber = NULL;
 	indexCam = -1;
 
-	camWidth = 640;  // try to grab at this size.
-	camHeight = 480;
+	camWidth = 640;//640;  // try to grab at this size.
+	camHeight = 480;//480;
 
 	rotate = 0;
 	
@@ -44,6 +52,11 @@ void eye::setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type typ
 	nameUsedCam = "Camera NONE";
 
 	recalculateThePositionOfTheFrame();
+
+
+	one_second_time = ofGetElapsedTimeMillis();
+	camera_fps = 0;
+	frames_one_sec = 0;
 
 	// GUI settings
 	showGui = false;
@@ -90,7 +103,7 @@ void eye::setup(ofRectangle rect, vector<ofVideoDevice> deviceList, eye_type typ
 	gui.add(marginSlider.setup("margin", lateral_margins, 0, mainRect.width / 2 - lateral_margins));
 	gui.add(rotatePlus.setup("Rotated ON clockwise by 90 deg"));
 	gui.add(rotateMinus.setup("Rotated COUNTER clockwise 90 deg"));
-	gui.setPosition(mainRect.x + 10, mainRect.y + 10);
+	gui.setPosition(mainRect.getCenter().x - gui.getWidth() / 2, mainRect.getCenter().y - gui.getHeight()/2);
 }
 
 void eye::update()
@@ -120,6 +133,12 @@ void eye::update()
 			if (vidGrabber != NULL) {
 				vidGrabber->update();
 				if (vidGrabber->isFrameNew()) {
+					frames_one_sec++;
+					if( ofGetElapsedTimeMillis() - one_second_time >= 1000){
+						camera_fps = frames_one_sec;
+						frames_one_sec = 0;
+						one_second_time = ofGetElapsedTimeMillis();
+					}
 					ofPixels & pixels = vidGrabber->getPixels();
 				}
 			}
@@ -146,6 +165,25 @@ void eye::draw()
 			}
 		}
 		ofPopMatrix();
+
+		ofPushMatrix();
+		ofTranslate(mainRect.getCenter());
+		if (enable) {
+			if (indexCam >= 0) {
+				if (vidGrabber != NULL) {
+					// Draw text gui
+					ofSetColor(0, 0, 255, 100);
+					ofDrawRectangle(mainRect.width / 2 - 350, 50 - mainRect.height / 2, 300, 100);
+					ofSetColor(255, 255, 0, 255);
+					ofDrawBitmapString("fps: " + ofToString(ofGetFrameRate()), mainRect.width / 2 - 330, 70 - mainRect.height / 2);
+					ofDrawBitmapString("camera fps: " + ofToString(camera_fps), mainRect.width / 2 - 330, 90 - mainRect.height / 2);
+#ifdef TARGET_ANDROID
+					ofDrawBitmapString("orientation: " + ofToString(orientation), mainRect.width - 330, 110 - mainRect.height / 2);
+#endif
+				}
+			}
+		}
+		ofPopMatrix();
 	}
 
 	// finally, a report:
@@ -165,6 +203,11 @@ void eye::draw()
 		}
 	}
 	ofDrawBitmapString(reportStr.str(), mainRect.x + 20, mainRect.y + 20);
+
+#ifdef TARGET_ANDROID
+	int wOrientation = ofOrientationToDegrees(ofGetOrientation());
+	ofLogNotice()<<"Orientation: "<<ofGetOrientation()<<endl;
+#endif
 
 	if (showGui) {
 		gui.draw();
@@ -294,10 +337,25 @@ void eye::camInit()
 		recalculateThePositionOfTheFrame();
 		return;
 	}
+#ifdef TARGET_ANDROID
+	// Set the pixel format for getPixels to monochrome
+	// (other image formats will include heavy pixel conversion)
+	vidGrabber->setPixelFormat(OF_PIXELS_MONO);
 
+	// Hint the grabber if you don't need pixel data for better performance
+	//((ofxAndroidVideoGrabber*)grabber.getGrabber().get())->setUsePixels(false);
+
+	// Start the grabber
+	vidGrabber->setup(camWidth,camHeight);
+
+	// Get the orientation and facing of the current camera
+	orientation = ((ofxAndroidVideoGrabber*)vidGrabber->getGrabber().get())->getCameraOrientation();
+	//facing = ((ofxAndroidVideoGrabber*)vidGrabber->getGrabber().get())->getFacingOfCamera();
+#else
 	vidGrabber->setDeviceID(indexCam);
 	//vidGrabber->setDesiredFrameRate(60);
-	vidGrabber->initGrabber(640, 480);
+	vidGrabber->initGrabber(camWidth, camHeight);
+#endif
 
 	ratioFrame = (double)vidGrabber->getWidth() / vidGrabber->getHeight();
 	recalculateThePositionOfTheFrame();
