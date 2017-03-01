@@ -1,0 +1,7 @@
+set solib-search-path /d/Work/OF_combo/spvar/obj/local/armeabi-v7a:/d/Work/OF_combo/spvar/libs/armeabi-v7a
+set sysroot d:/Dev/android-ndk-r10e/platforms/android-19/arch-x86/
+directory d:/Dev/android-ndk-r10e/platforms/android-19/arch-arm/usr/include
+directory /d/Work/OF_combo/spvar/src
+directory d:/Dev/android-ndk-r10e/sources/cxx-stl/system
+directory /d/Work/OF_combo/spvar/libs/armeabi-v7a
+
